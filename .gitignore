@@ -16,3 +16,12 @@ __pycache__/
 # IDE
 .vscode/
 .idea/
+
+# Modelli serializzati (rigenerabili da NB03)
+models/*.pkl
+
+# Modelli serializzati (rigenerabili da NB03)
+models/*.pkl
+
+# Modelli serializzati (rigenerabili da NB03)
+models/*.pkl
