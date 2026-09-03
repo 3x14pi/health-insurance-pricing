@@ -1,0 +1,4 @@
+,gini_train,gini_test,mae_test
+0. Baseline (media),-0.0082,0.0044,74.4326
+1. Freq x Severity,0.4655,0.4553,67.011
+2. Tweedie,0.4531,0.4505,67.0984
