@@ -2,6 +2,8 @@
 
 Modello predittivo del burning cost individuale (costo atteso sinistri per anno-uomo) su un portafoglio di assicurazione sanitaria collettiva.
 
+📄 La relazione completa del progetto è disponibile in [`RelazioneFerriAntonio.pdf`](RelazioneFerriAntonio.pdf).
+
 ## Obiettivo
 
 Stimare il **burning cost** per ogni assicurato scomponendolo in due componenti:
@@ -19,7 +21,7 @@ L'approccio a due stadi separati è lo standard nella pratica assicurativa: forn
 
 Il dataset contiene circa 79.000 record assicurato-anno su 3 anni di sottoscrizione, collegati a circa 40.000 sinistri di un portafoglio sanitario collettivo. Le variabili includono dati demografici (età, sesso), attributi contrattuali (categoria dipendente, legame familiare), caratteristiche aziendali (settore, dimensione) e area geografica.
 
-Il dataset non è incluso nel repository.
+**Origine e disponibilità:** I dati provengono da un esercizio di pricing assicurativo su un portafoglio sanitario collettivo e non sono ridistribuibili. Il dataset non è quindi incluso nel repository. Lo schema delle variabili è documentato in [`reports/dizionario_feature.csv`](reports/dizionario_feature.csv), il dettaglio dei controlli di qualità in [`reports/appendice_data_quality.md`](reports/appendice_data_quality.md).
 
 ### Analisi esplorativa e pulizia
 
@@ -35,11 +37,13 @@ Per simulare l'uso reale del modello (prevedere il futuro a partire dal passato)
 ## Feature engineering
 
 A partire dai dati grezzi sono state derivate:
+
 - **Fasce di età**: discretizzazione dell'età continua per catturare la non linearità a J del rischio sanitario (alto nei bambini, basso nei giovani-adulti, crescente negli anziani)
 - **Struttura del nucleo familiare**: composizione numerica, numero di assicurati, variabili aggregate a livello nucleo
 - **Dimensione azienda**: numero di assicurati per azienda in scala logaritmica — il log comprime la leva delle poche aziende molto grandi, ottenendo un effetto più regolare
 
 **Variabili usate nel modello:**
+
 - *Categoriche*: fascia di età, sesso, categoria contrattuale, legame familiare, settore, macroarea
 - *Numeriche*: composizione numerica del nucleo, dimensione azienda (log)
 - *Interazione*: fascia di età × sesso — nella salute il profilo di rischio per età differisce tra uomini e donne (picco di frequenza femminile in età fertile)
@@ -68,27 +72,35 @@ Il burning cost per anno-uomo è il prodotto delle due componenti. Poiché entra
 
 ## Risultati (test set, out-of-time)
 
-| Metrica | Valore | Interpretazione |
-|---------|--------|-----------------|
-| **Gini** | 0,46 [0,44 ; 0,47] | Potere di ordinamento robusto (IC 95% bootstrap) |
-| **A/E** | 1,04 | Calibrazione — scarto 4%, entro soglia accettabile |
+| Metrica  | Valore             | Interpretazione                                    |
+| -------- | ------------------ | -------------------------------------------------- |
+| **Gini** | 0,46 [0,44 ; 0,47] | Potere di ordinamento robusto (IC 95% bootstrap)   |
+| **A/E**  | 1,04               | Calibrazione — scarto 4%, entro soglia accettabile |
 
 ### Principali fattori tariffari
 
 Riferimenti: dipendente base (categoria), fascia 0-17 (età).
 
-| Segmento | Frequenza | Severity |
-|----------|-----------|----------|
-| Pensionati | 3,4× | 1,2× |
-| Dirigenti | 2,1× | 1,3× |
-| Dipendenti qualificati | 1,9× | 1,2× |
-| Età 75+ | 1,8× | 1,1× |
+| Segmento               | Frequenza | Severity |
+| ---------------------- | --------- | -------- |
+| Pensionati             | 3,4×      | 1,2×     |
+| Dirigenti              | 2,1×      | 1,3×     |
+| Dipendenti qualificati | 1,9×      | 1,2×     |
+| Età 75+                | 1,8×      | 1,1×     |
 
 La separazione tra frequenza e severity mostra **dove** agisce ogni driver: i pensionati sono guidati dall'alta frequenza, i dirigenti dalla severity più elevata.
+
+Il dettaglio completo dei coefficienti è in [`reports/coefficienti_modelli.csv`](reports/coefficienti_modelli.csv), il confronto tra i modelli valutati in [`reports/confronto_modelli.csv`](reports/confronto_modelli.csv).
 
 ### Calibrazione per segmento (A/E)
 
 I segmenti principali sono ben calibrati (dirigenti 1,03, pensionati 1,01). Gli scostamenti si concentrano sui giovani 18-30 (A/E 1,17) e sui pochi 75+ (A/E 0,86, n=75), base per eventuali azioni correttive.
+
+Dettaglio in [`reports/ae_per_categoria.csv`](reports/ae_per_categoria.csv) e [`reports/ae_per_fascia_eta.csv`](reports/ae_per_fascia_eta.csv).
+
+## Calcolatore tariffario
+
+[`Calcolatore.xlsx`](Calcolatore.xlsx) implementa il modello in un foglio Excel: inserendo il profilo di un assicurato (età, sesso, categoria contrattuale, settore, area) restituisce il burning cost atteso applicando i fattori tariffari stimati. Permette di simulare scenari di premio senza rieseguire i notebook.
 
 ## Limiti e opportunità
 
@@ -101,26 +113,37 @@ I segmenti principali sono ben calibrati (dirigenti 1,03, pensionati 1,01). Gli 
 
 ```
 notebooks/
-    NB01_data_understanding.ipynb      # EDA e qualità dati
-    NB02_data_preparation.ipynb        # Pulizia, feature engineering, split train/test
-    NB03_modellazione_validazione.ipynb # Modellazione GLM e validazione
+    NB01_data_understanding.ipynb        # EDA e qualità dati
+    NB02_data_preparation.ipynb          # Pulizia, feature engineering, split temporale
+    NB03_modellazione_validazione.ipynb  # GLM Poisson + Gamma, validazione out-of-time
+
 reports/
-    coefficienti_modelli.csv           # Tabella coefficienti completa (frequenza + severity)
-    confronto_modelli.csv              # Confronto modelli (Gini, MAE)
-    ae_per_categoria.csv               # A/E per categoria contrattuale
-    ae_per_fascia_eta.csv              # A/E per fascia di età
-    lift_table_modello_scelto.csv      # Lift table (decili)
-    dizionario_feature.csv             # Dizionario delle feature
+    coefficienti_modelli.csv             # Coefficienti frequenza + severity
+    confronto_modelli.csv                # Confronto modelli (Gini, MAE)
+    ae_per_categoria.csv                 # A/E per categoria contrattuale
+    ae_per_fascia_eta.csv                # A/E per fascia di età
+    lift_table_modello_scelto.csv        # Lift table per decili, modello scelto
+    lift_table_best.csv                  # Lift table, modello alternativo
+    dizionario_feature.csv               # Dizionario delle feature
+    dati_modello.xlsx                    # Tabella riassuntiva
+    appendice_data_quality.md            # Dettaglio controlli qualità dati
+
+Calcolatore.xlsx                         # Calcolatore tariffario
+RelazioneFerriAntonio.pdf                # Relazione completa del progetto
+requirements.txt                         # Dipendenze Python
 ```
+
+I modelli serializzati non sono versionati: si rigenerano eseguendo NB03.
 
 ## Setup
 
 ```bash
 pip install -r requirements.txt
+jupyter lab notebooks/
 ```
 
 I notebook vanno eseguiti in sequenza (NB01 → NB02 → NB03). NB02 produce il dataset modellabile usato da NB03.
 
 ## Autore
 
-Antonio Ferri
+Antonio Ferri — [LinkedIn](https://linkedin.com/in/anton-ferri) · [GitHub](https://github.com/3x14pi)
