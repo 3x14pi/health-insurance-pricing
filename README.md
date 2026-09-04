@@ -21,7 +21,7 @@ L'approccio a due stadi separati è lo standard nella pratica assicurativa: forn
 
 Il dataset contiene circa 79.000 record assicurato-anno su 3 anni di sottoscrizione, collegati a circa 40.000 sinistri di un portafoglio sanitario collettivo. Le variabili includono dati demografici (età, sesso), attributi contrattuali (categoria dipendente, legame familiare), caratteristiche aziendali (settore, dimensione) e area geografica.
 
-**Origine e disponibilità:** [DA COMPILARE — es. "I dati provengono da un'esercitazione didattica di pricing assicurativo e non sono ridistribuibili."]. Il dataset non è quindi incluso nel repository. Lo schema delle variabili è documentato in [`reports/dizionario_feature.csv`](reports/dizionario_feature.csv), il dettaglio dei controlli di qualità in [`reports/appendice_data_quality.md`](reports/appendice_data_quality.md).
+**Origine e disponibilità:** I dati provengono da un esercizio di pricing assicurativo su un portafoglio sanitario collettivo e non sono ridistribuibili. Il dataset non è quindi incluso nel repository. Lo schema delle variabili è documentato in [`reports/dizionario_feature.csv`](reports/dizionario_feature.csv), il dettaglio dei controlli di qualità in [`reports/appendice_data_quality.md`](reports/appendice_data_quality.md).
 
 ### Analisi esplorativa e pulizia
 
