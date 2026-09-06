@@ -10,8 +10,6 @@ Modello predittivo del burning cost individuale (costo atteso sinistri per anno-
 
 Questo repository include una pagina web statica pubblicabile con GitHub Pages. Permette di inserire il profilo di un assicurato e visualizzare la stima di frequenza, severity e burning cost direttamente dal browser, senza installare un server o esporre dati riservati. La demo utilizza la copia pubblica dei coefficienti in [`docs/coefficienti_modelli.csv`](docs/coefficienti_modelli.csv), mentre il report completo resta in [`reports/coefficienti_modelli.csv`](reports/coefficienti_modelli.csv).
 
-Per condividere la demo con altre persone è necessario usare l'URL pubblico di GitHub Pages, nella forma `https://<username>.github.io/<repository>/`. Il percorso locale `127.0.0.1` e la pagina `docs/index.html` visualizzata direttamente su GitHub funzionano solo sul computer del proprietario o non eseguono correttamente il caricamento dei coefficienti.
-
 > **Nota metodologica.** Il modello è costruito su un portafoglio osservato per soli tre anni. Le performance riportate descrivono principalmente la capacità di ordinare il rischio attraverso una struttura GLM trasparente e interpretabile; non costituiscono una garanzia di accuratezza futura.
 >
 > Il burning cost prodotto è un costo tecnico atteso per anno-uomo, non un premio commerciale e non un sistema già pronto per l'utilizzo reale. Per un impiego operativo servirebbero più anni di dati, una validazione temporale più ampia, dati aggiornati e rappresentativi del portafoglio, monitoraggio della stabilità e della calibrazione, gestione dell'incertezza e caricamenti per spese, capitale, inflazione, imposte e margine.
@@ -169,19 +167,6 @@ jupyter lab notebooks/
 ```
 
 I notebook vanno eseguiti in sequenza (NB01 → NB02 → NB03). NB02 produce il dataset modellabile usato da NB03.
-
-## Sito web su GitHub Pages
-
-La cartella `docs/` contiene il calcolatore web statico. Non richiede Python, FastAPI o un server in esecuzione: usa nel browser gli stessi coefficienti presenti in `reports/coefficienti_modelli.csv`.
-
-Per pubblicarlo:
-
-1. Esegui il push del repository su GitHub.
-2. Apri `Settings` → `Pages`.
-3. In `Build and deployment`, seleziona `Deploy from a branch`.
-4. Seleziona il branch principale e la cartella `/docs`, poi salva.
-
-Dopo la pubblicazione, GitHub mostrerà l'URL del sito nella stessa sezione `Pages`.
 
 ## Autore
 
