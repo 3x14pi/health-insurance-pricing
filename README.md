@@ -6,7 +6,7 @@ Modello predittivo del burning cost individuale (costo atteso sinistri per anno-
 
 ## Demo web
 
-**[Apri il calcolatore interattivo](docs/index.html)**
+**[Apri il calcolatore interattivo](https://3x14pi.github.io/health-insurance-pricing/)**
 
 Questo repository include una pagina web statica pubblicabile con GitHub Pages. Permette di inserire il profilo di un assicurato e visualizzare la stima di frequenza, severity e burning cost direttamente dal browser, senza installare un server o esporre dati riservati. La demo utilizza la copia pubblica dei coefficienti in [`docs/coefficienti_modelli.csv`](docs/coefficienti_modelli.csv), mentre il report completo resta in [`reports/coefficienti_modelli.csv`](reports/coefficienti_modelli.csv).
 
