@@ -2,7 +2,7 @@
 
 Modello predittivo del burning cost individuale (costo atteso sinistri per anno-uomo) su un portafoglio di assicurazione sanitaria collettiva.
 
-📄 La relazione completa del progetto è disponibile in [`RelazioneFerriAntonio.pdf`](RelazioneFerriAntonio.pdf).
+La relazione completa del progetto è disponibile in [`RelazioneFerriAntonio.pdf`](RelazioneFerriAntonio.pdf).
 
 ## Demo web
 
