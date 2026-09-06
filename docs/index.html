@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Calcolatore del burning cost per il pricing sanitario collettivo">
+    <title>Pricing sanitario | Burning Cost Calculator</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="shell">
+      <header class="topbar">
+        <a class="brand" href="."><span class="brand-mark">P</span><span>PRICING SANITARIO</span></a>
+        <span class="status"><span class="status-dot"></span>MODELLO ATTIVO</span>
+      </header>
+
+      <section class="intro">
+        <div>
+          <p class="eyebrow">HEALTH INSURANCE · GLM TWO-STAGE</p>
+          <h1>Quanto costa<br><em>un profilo?</em></h1>
+          <p class="lede">Inserisci i fattori tariffari dell'assicurato. Il modello stima il burning cost atteso separando frequenza dei sinistri e costo medio.</p>
+        </div>
+        <div class="formula" aria-label="Formula del burning cost">
+          <span>FREQUENZA</span><b>×</b><span>SEVERITY</span><strong>= BC</strong>
+        </div>
+      </section>
+
+      <section class="method-note" aria-label="Nota metodologica">
+        <div class="note-label">NOTA METODOLOGICA</div>
+        <p>La stima è costruita su un portafoglio osservato per soli tre anni. Le performance riportate descrivono soprattutto la capacità del modello di ordinare il rischio mantenendo una struttura trasparente e interpretabile.</p>
+        <p>Il risultato è quindi un costo tecnico atteso, non un premio commerciale né uno strumento già pronto per l'uso reale. Un modello operativo richiederebbe più anni di dati, validazione su periodi futuri, monitoraggio della stabilità e caricamenti tecnici e commerciali.</p>
+      </section>
+
+      <section class="workspace">
+        <form id="pricing-form" class="panel form-panel">
+          <div class="panel-heading">
+            <div><span class="step">01</span><h2>Profilo assicurato</h2></div>
+            <span class="required-note">TUTTI I CAMPI SONO RICHIESTI</span>
+          </div>
+
+          <div class="field-grid">
+            <label class="field field-wide">
+              <span>Eta</span>
+              <input id="eta" name="eta" type="number" min="0" max="120" value="65" required>
+              <small id="age-band">Fascia 61-75</small>
+            </label>
+            <label class="field">
+              <span>Sesso</span>
+              <select id="sesso" name="sesso" required></select>
+            </label>
+            <label class="field">
+              <span>Categoria contrattuale</span>
+              <select id="categoria" name="categoria" required></select>
+            </label>
+            <label class="field">
+              <span>Legame familiare</span>
+              <select id="legame_familiare" name="legame_familiare" required></select>
+            </label>
+            <label class="field">
+              <span>Settore aziendale</span>
+              <select id="settore" name="settore" required></select>
+            </label>
+            <label class="field">
+              <span>Macroarea</span>
+              <select id="macroarea" name="macroarea" required></select>
+            </label>
+            <label class="field">
+              <span>Composizione nucleo</span>
+              <input id="composizione_num" name="composizione_num" type="number" min="0" step="1" value="1" required>
+              <small>Numero componenti</small>
+            </label>
+            <label class="field">
+              <span>Numero assicurati nell'azienda</span>
+              <input id="dimensione_azienda" name="dimensione_azienda" type="number" min="1" step="1" value="1500" required>
+              <small class="field-help">Inserisci quante persone sono assicurate nella stessa azienda.<br>Il modello usa ln(1 + numero), per ridurre l'effetto delle aziende molto grandi.</small>
+            </label>
+            <label class="field field-wide exposure-field">
+              <span>Esposizione annua <output id="exposure-value">1,00</output></span>
+              <input id="esposizione" name="esposizione" type="range" min="0.01" max="1" step="0.01" value="1">
+              <small>Il BC e per anno-uomo; l'esposizione calcola il costo del periodo.</small>
+            </label>
+          </div>
+
+          <button class="calculate" type="submit"><span>Calcola burning cost</span><span class="arrow">↗</span></button>
+          <p id="error-message" class="error" role="alert" hidden></p>
+        </form>
+
+        <aside class="panel result-panel" aria-live="polite">
+          <div class="panel-heading result-heading">
+            <div><span class="step">02</span><h2>Stima tecnica</h2></div>
+            <span class="live-label">OUTPUT</span>
+          </div>
+          <div id="empty-state" class="empty-state">Compila il profilo e lancia una stima per vedere il risultato.</div>
+          <div id="result" hidden>
+            <div class="result-main">
+              <span>Burning cost annuo</span>
+              <strong id="burning-cost">--</strong>
+              <small>costo atteso sinistri / anno-uomo</small>
+            </div>
+            <div class="metric-row">
+              <div><span>Frequenza attesa</span><strong id="frequency">--</strong><small>sinistri / anno</small></div>
+              <div><span>Severity attesa</span><strong id="severity">--</strong><small>costo / sinistro</small></div>
+            </div>
+            <div class="period-cost"><span>Costo atteso sul periodo</span><strong id="period-cost">--</strong><small>BC × esposizione</small></div>
+            <div class="profile-line"><span id="profile-summary">Profilo</span><span id="profile-band">31-45</span></div>
+          </div>
+        </aside>
+      </section>
+
+    </main>
+    <script src="app.js?v=2"></script>
+  </body>
+</html>

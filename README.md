@@ -4,6 +4,16 @@ Modello predittivo del burning cost individuale (costo atteso sinistri per anno-
 
 📄 La relazione completa del progetto è disponibile in [`RelazioneFerriAntonio.pdf`](RelazioneFerriAntonio.pdf).
 
+## Demo web
+
+**[Apri il calcolatore interattivo](docs/index.html)**
+
+Questo repository include una pagina web statica pubblicabile con GitHub Pages. Permette di inserire il profilo di un assicurato e visualizzare la stima di frequenza, severity e burning cost direttamente dal browser, senza installare un server o esporre dati riservati.
+
+> **Nota metodologica.** Il modello è costruito su un portafoglio osservato per soli tre anni. Le performance riportate descrivono principalmente la capacità di ordinare il rischio attraverso una struttura GLM trasparente e interpretabile; non costituiscono una garanzia di accuratezza futura.
+>
+> Il burning cost prodotto è un costo tecnico atteso per anno-uomo, non un premio commerciale e non un sistema già pronto per l'utilizzo reale. Per un impiego operativo servirebbero più anni di dati, una validazione temporale più ampia, dati aggiornati e rappresentativi del portafoglio, monitoraggio della stabilità e della calibrazione, gestione dell'incertezza e caricamenti per spese, capitale, inflazione, imposte e margine.
+
 ## Obiettivo
 
 Stimare il **burning cost** per ogni assicurato scomponendolo in due componenti:
@@ -40,12 +50,12 @@ A partire dai dati grezzi sono state derivate:
 
 - **Fasce di età**: discretizzazione dell'età continua per catturare la non linearità a J del rischio sanitario (alto nei bambini, basso nei giovani-adulti, crescente negli anziani)
 - **Struttura del nucleo familiare**: composizione numerica, numero di assicurati, variabili aggregate a livello nucleo
-- **Dimensione azienda**: numero di assicurati per azienda in scala logaritmica — il log comprime la leva delle poche aziende molto grandi, ottenendo un effetto più regolare
+- **Numero assicurati nell'azienda**: l'utente inserisce il numero reale di assicurati presenti nella stessa azienda; il modello applica internamente `ln(1 + numero)`, che comprime l'effetto delle poche aziende molto grandi e rende la relazione più regolare
 
 **Variabili usate nel modello:**
 
 - *Categoriche*: fascia di età, sesso, categoria contrattuale, legame familiare, settore, macroarea
-- *Numeriche*: composizione numerica del nucleo, dimensione azienda (log)
+- *Numeriche*: composizione numerica del nucleo, `ln(1 + numero assicurati nell'azienda)`
 - *Interazione*: fascia di età × sesso — nella salute il profilo di rischio per età differisce tra uomini e donne (picco di frequenza femminile in età fertile)
 
 Le variabili scartate sono escluse per collinearità o ridondanza con predittori già presenti. Sono inoltre escluse tutte le grandezze note solo dopo l'accadimento del sinistro (controllo del data leakage).
@@ -98,16 +108,30 @@ I segmenti principali sono ben calibrati (dirigenti 1,03, pensionati 1,01). Gli 
 
 Dettaglio in [`reports/ae_per_categoria.csv`](reports/ae_per_categoria.csv) e [`reports/ae_per_fascia_eta.csv`](reports/ae_per_fascia_eta.csv).
 
+### Come interpretare il burning cost
+
+Il burning cost restituito dal modello è il **costo tecnico atteso dei sinistri per anno-uomo**. Non è il premio finale richiesto all'assicurato: per ottenere un premio commerciale andrebbero aggiunti, tra gli altri, spese, commissioni, imposte, margine di sicurezza, profitto e possibili caricamenti per inflazione sanitaria.
+
+Il valore è una stima media per un profilo osservabile. Non rappresenta il costo certo del singolo assicurato e non include un intervallo di incertezza individuale. Per questo va usato per confrontare e ordinare i profili di rischio, non come unica base per una quotazione definitiva.
+
 ## Calcolatore tariffario
 
 [`Calcolatore.xlsx`](Calcolatore.xlsx) implementa il modello in un foglio Excel: inserendo il profilo di un assicurato (età, sesso, categoria contrattuale, settore, area) restituisce il burning cost atteso applicando i fattori tariffari stimati. Permette di simulare scenari di premio senza rieseguire i notebook.
 
 ## Limiti e opportunità
 
+Il modello è una **buona base tecnica per un progetto di pricing e per un prototipo**, ma non è ancora sufficiente da solo per determinare un premio commerciale reale.
+
+- **Potere predittivo**: il Gini out-of-time di `0,46` indica un ordinamento del rischio utile, ma buono e non eccezionale. Va confrontato con benchmark aziendali e con modelli challenger
+- **Tempo limitato**: ci sono solo 3 anni di dati e un solo anno di test. Più anni permetterebbero di verificare la stabilità e stimare trend come l'inflazione medica
+- **Dimensione azienda**: il modello stima un effetto negativo della dimensione aziendale sul rischio. Potrebbe riflettere una reale composizione del portafoglio, ma anche variabili non osservate; questo effetto va monitorato con analisi di stabilità e grafici di calibrazione
+- **Incertezza individuale**: il risultato è una media condizionata e non presenta intervalli di confidenza per il singolo profilo. Una tariffa reale dovrebbe aggiungere margini per volatilità e rischio di parametro
+- **Premio commerciale**: il burning cost non include spese, commissioni, imposte, profitto, margine di sicurezza o inflazione prospettica
 - **Correlazione intra-nucleo**: i membri dello stesso nucleo condividono fattori non osservati. Un modello a effetti misti (GLMM) potrebbe catturarli
-- **Tempo limitato**: soli 3 anni di dati, con un solo anno di test. Più anni permetterebbero di verificare la stabilità e stimare trend (es. inflazione medica)
 - **Linearità del GLM**: il modello cattura solo gli effetti specificati esplicitamente. Un modello non lineare (LightGBM) come challenger, con SHAP, potrebbe scoprire pattern nascosti
-- **Settore**: il settore aziendale approssima il rischio professionale ma non lo cattura del tutto. Dati esterni (es. tassi INAIL) potrebbero migliorare il potere di ordinamento
+- **Settore**: il settore aziendale approssima il rischio professionale ma non lo cattura del tutto. Dati esterni, ad esempio tassi INAIL, potrebbero migliorare il potere di ordinamento
+
+Le estensioni prioritarie sono: validazione su più anni, confronto con un challenger non lineare, monitoraggio della calibrazione per segmento e stima esplicita dei caricamenti necessari per passare dal costo tecnico al premio.
 
 ## Struttura del progetto
 
@@ -143,6 +167,19 @@ jupyter lab notebooks/
 ```
 
 I notebook vanno eseguiti in sequenza (NB01 → NB02 → NB03). NB02 produce il dataset modellabile usato da NB03.
+
+## Sito web su GitHub Pages
+
+La cartella `docs/` contiene il calcolatore web statico. Non richiede Python, FastAPI o un server in esecuzione: usa nel browser gli stessi coefficienti presenti in `reports/coefficienti_modelli.csv`.
+
+Per pubblicarlo:
+
+1. Esegui il push del repository su GitHub.
+2. Apri `Settings` → `Pages`.
+3. In `Build and deployment`, seleziona `Deploy from a branch`.
+4. Seleziona il branch principale e la cartella `/docs`, poi salva.
+
+Dopo la pubblicazione, GitHub mostrerà l'URL del sito nella stessa sezione `Pages`.
 
 ## Autore
 
