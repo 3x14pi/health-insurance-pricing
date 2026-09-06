@@ -108,6 +108,16 @@ I segmenti principali sono ben calibrati (dirigenti 1,03, pensionati 1,01). Gli 
 
 Dettaglio in [`reports/ae_per_categoria.csv`](reports/ae_per_categoria.csv) e [`reports/ae_per_fascia_eta.csv`](reports/ae_per_fascia_eta.csv).
 
+### Visualizzazioni
+
+La Figura 1 riproduce la lift table della relazione: il burning cost osservato cresce passando dai decili a rischio più basso a quelli a rischio più alto, confermando la capacità del modello di ordinare il rischio.
+
+![Lift chart per decile di rischio](docs/figures/lift_chart.png)
+
+La Tabella 2 della relazione è rappresentata sotto forma di grafico: un valore A/E pari a 1 indica che il costo osservato coincide con quello previsto. Sono inclusi i segmenti per fascia d'età, categoria contrattuale, macroarea e sesso.
+
+![Calibrazione A/E per segmento](docs/figures/ae_by_segment.png)
+
 ### Come interpretare il burning cost
 
 Il burning cost restituito dal modello è il **costo tecnico atteso dei sinistri per anno-uomo**. Non è il premio finale richiesto all'assicurato: per ottenere un premio commerciale andrebbero aggiunti, tra gli altri, spese, commissioni, imposte, margine di sicurezza, profitto e possibili caricamenti per inflazione sanitaria.
@@ -151,6 +161,10 @@ reports/
     dizionario_feature.csv               # Dizionario delle feature
     dati_modello.xlsx                    # Tabella riassuntiva
     appendice_data_quality.md            # Dettaglio controlli qualità dati
+
+docs/figures/
+    lift_chart.png                       # Burning cost previsto vs osservato per decile
+    ae_by_segment.png                    # A/E per segmento, come nella relazione
 
 Calcolatore.xlsx                         # Calcolatore tariffario
 RelazioneFerriAntonio.pdf                # Relazione completa del progetto
