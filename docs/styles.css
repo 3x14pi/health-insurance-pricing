@@ -45,6 +45,7 @@ input[type=range] { height: 5px; appearance: none; border: 0; background: #dce4d
 input[type=range]::-webkit-slider-thumb { width: 18px; height: 18px; appearance: none; border: 3px solid var(--teal); border-radius: 50%; background: var(--acid); cursor: pointer; }
 .calculate { display: flex; width: 100%; align-items: center; justify-content: space-between; padding: 15px 17px; border: 0; background: var(--ink); color: var(--paper); cursor: pointer; font: 600 13px 'Space Grotesk', sans-serif; transition: background .2s, transform .2s; }
 .calculate:hover { background: var(--teal); transform: translateY(-2px); }
+.calculate:disabled { background: #aebbb1; cursor: wait; transform: none; }
 .arrow { color: var(--acid); font-size: 22px; line-height: 12px; }
 .error { margin: 16px 0 0; color: #bd3f29; font: 11px 'DM Mono', monospace; }
 .empty-state { margin: auto 0; color: rgba(242,244,237,.6); font-size: 14px; line-height: 1.5; }

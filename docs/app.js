@@ -1,4 +1,4 @@
-const state = { coefficients: { frequenza: {}, severity: {} }, categories: {} };
+const state = { coefficients: { frequenza: {}, severity: {} }, categories: {}, ready: false };
 const categoryFields = ['sesso', 'categoria', 'legame_familiare', 'settore', 'macroarea'];
 const defaults = { sesso: 'M', categoria: 'DIRIGENZIALE', legame_familiare: 'DIPENDENTE', settore: 'BANKING_FINANCE', macroarea: 'NORD-EST' };
 const termPattern = /^C\(([^,)]+)(?:, Treatment\(reference='[^']+'\))?\)\[T\.(.+)\]$/;
@@ -70,6 +70,7 @@ function calculate(event) {
   event.preventDefault();
   const error = document.getElementById('error-message');
   try {
+    if (!state.ready) throw new Error('Il modello non è ancora disponibile. Ricarica la pagina e riprova.');
     const values = readValues();
     if (!Number.isFinite(values.eta) || values.eta < 0 || values.eta > 120) throw new Error('Inserisci un eta compresa tra 0 e 120.');
     if (!Number.isFinite(values.dimensione_azienda) || values.dimensione_azienda < 1) throw new Error('Inserisci almeno 1 assicurato nell azienda.');
@@ -89,6 +90,7 @@ function calculate(event) {
 }
 
 async function init() {
+  const button = document.getElementById('calculate-button');
   document.getElementById('pricing-form').addEventListener('submit', calculate);
   document.getElementById('eta').addEventListener('input', event => { document.getElementById('age-band').textContent = `Fascia ${ageBand(Number(event.target.value))}`; });
   document.getElementById('esposizione').addEventListener('input', event => { document.getElementById('exposure-value').textContent = formatNumber(Number(event.target.value)); });
@@ -96,9 +98,18 @@ async function init() {
     const response = await fetch('../reports/coefficienti_modelli.csv');
     if (!response.ok) throw new Error('Impossibile caricare i coefficienti del modello.');
     parseCsv(await response.text()).forEach(row => { if (state.coefficients[row.modello]) state.coefficients[row.modello][row.termine] = Number(row.coef); });
+    if (!state.coefficients.frequenza.Intercept || !state.coefficients.severity.Intercept) throw new Error('I coefficienti del modello non sono validi.');
     discoverCategories();
+    state.ready = true;
+    button.disabled = false;
+    button.querySelector('span').textContent = 'Calcola burning cost';
     document.getElementById('pricing-form').requestSubmit();
-  } catch (error) { document.getElementById('error-message').textContent = error.message; document.getElementById('error-message').hidden = false; }
+  } catch (error) {
+    button.disabled = true;
+    button.querySelector('span').textContent = 'Modello non disponibile';
+    document.getElementById('error-message').textContent = `${error.message} Controlla di aver aperto il link GitHub Pages completo.`;
+    document.getElementById('error-message').hidden = false;
+  }
 }
 
 init();
