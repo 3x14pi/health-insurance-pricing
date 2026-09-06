@@ -95,9 +95,17 @@ async function init() {
   document.getElementById('eta').addEventListener('input', event => { document.getElementById('age-band').textContent = `Fascia ${ageBand(Number(event.target.value))}`; });
   document.getElementById('esposizione').addEventListener('input', event => { document.getElementById('exposure-value').textContent = formatNumber(Number(event.target.value)); });
   try {
-    const response = await fetch('../reports/coefficienti_modelli.csv');
-    if (!response.ok) throw new Error('Impossibile caricare i coefficienti del modello.');
-    parseCsv(await response.text()).forEach(row => { if (state.coefficients[row.modello]) state.coefficients[row.modello][row.termine] = Number(row.coef); });
+    const coefficientPaths = ['reports/coefficienti_modelli.csv', '../reports/coefficienti_modelli.csv'];
+    let coefficientText = null;
+    for (const path of coefficientPaths) {
+      const response = await fetch(path);
+      if (response.ok) {
+        coefficientText = await response.text();
+        break;
+      }
+    }
+    if (coefficientText === null) throw new Error('Impossibile caricare i coefficienti del modello.');
+    parseCsv(coefficientText).forEach(row => { if (state.coefficients[row.modello]) state.coefficients[row.modello][row.termine] = Number(row.coef); });
     if (!state.coefficients.frequenza.Intercept || !state.coefficients.severity.Intercept) throw new Error('I coefficienti del modello non sono validi.');
     discoverCategories();
     state.ready = true;
