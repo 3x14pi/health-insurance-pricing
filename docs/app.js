@@ -37,6 +37,7 @@ function discoverCategories() {
   }));
   categoryFields.forEach(field => {
     const select = document.getElementById(field);
+    select.replaceChildren();
     [...state.categories[field]].sort().forEach(value => { select.add(new Option(value, value)); });
     select.value = defaults[field];
   });
@@ -88,14 +89,14 @@ function calculate(event) {
 }
 
 async function init() {
+  document.getElementById('pricing-form').addEventListener('submit', calculate);
+  document.getElementById('eta').addEventListener('input', event => { document.getElementById('age-band').textContent = `Fascia ${ageBand(Number(event.target.value))}`; });
+  document.getElementById('esposizione').addEventListener('input', event => { document.getElementById('exposure-value').textContent = formatNumber(Number(event.target.value)); });
   try {
     const response = await fetch('../reports/coefficienti_modelli.csv');
     if (!response.ok) throw new Error('Impossibile caricare i coefficienti del modello.');
     parseCsv(await response.text()).forEach(row => { if (state.coefficients[row.modello]) state.coefficients[row.modello][row.termine] = Number(row.coef); });
     discoverCategories();
-    document.getElementById('pricing-form').addEventListener('submit', calculate);
-    document.getElementById('eta').addEventListener('input', event => { document.getElementById('age-band').textContent = `Fascia ${ageBand(Number(event.target.value))}`; });
-    document.getElementById('esposizione').addEventListener('input', event => { document.getElementById('exposure-value').textContent = formatNumber(Number(event.target.value)); });
     document.getElementById('pricing-form').requestSubmit();
   } catch (error) { document.getElementById('error-message').textContent = error.message; document.getElementById('error-message').hidden = false; }
 }
