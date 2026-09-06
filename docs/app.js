@@ -95,7 +95,7 @@ async function init() {
   document.getElementById('eta').addEventListener('input', event => { document.getElementById('age-band').textContent = `Fascia ${ageBand(Number(event.target.value))}`; });
   document.getElementById('esposizione').addEventListener('input', event => { document.getElementById('exposure-value').textContent = formatNumber(Number(event.target.value)); });
   try {
-    const coefficientPaths = ['reports/coefficienti_modelli.csv', '../reports/coefficienti_modelli.csv'];
+    const coefficientPaths = ['coefficienti_modelli.csv', 'reports/coefficienti_modelli.csv', '../reports/coefficienti_modelli.csv'];
     let coefficientText = null;
     for (const path of coefficientPaths) {
       const response = await fetch(path);

@@ -8,7 +8,7 @@ Modello predittivo del burning cost individuale (costo atteso sinistri per anno-
 
 **[Apri il calcolatore interattivo](docs/index.html)**
 
-Questo repository include una pagina web statica pubblicabile con GitHub Pages. Permette di inserire il profilo di un assicurato e visualizzare la stima di frequenza, severity e burning cost direttamente dal browser, senza installare un server o esporre dati riservati.
+Questo repository include una pagina web statica pubblicabile con GitHub Pages. Permette di inserire il profilo di un assicurato e visualizzare la stima di frequenza, severity e burning cost direttamente dal browser, senza installare un server o esporre dati riservati. La demo utilizza la copia pubblica dei coefficienti in [`docs/coefficienti_modelli.csv`](docs/coefficienti_modelli.csv), mentre il report completo resta in [`reports/coefficienti_modelli.csv`](reports/coefficienti_modelli.csv).
 
 Per condividere la demo con altre persone è necessario usare l'URL pubblico di GitHub Pages, nella forma `https://<username>.github.io/<repository>/`. Il percorso locale `127.0.0.1` e la pagina `docs/index.html` visualizzata direttamente su GitHub funzionano solo sul computer del proprietario o non eseguono correttamente il caricamento dei coefficienti.
 
